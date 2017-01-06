@@ -1,0 +1,447 @@
+var _user$project$Main$hoursTotal = function (model) {
+	var total = _elm_lang$core$List$sum(
+		A2(
+			_elm_lang$core$List$map,
+			function (_) {
+				return _.hours;
+			},
+			model.items));
+	return A2(
+		_elm_lang$html$Html$footer,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Total:'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(
+							_elm_lang$core$Basics$toString(total)),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Main$itemListHeader = A2(
+	_elm_lang$html$Html$header,
+	{ctor: '[]'},
+	{
+		ctor: '::',
+		_0: A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('Item'),
+				_1: {ctor: '[]'}
+			}),
+		_1: {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Hours Estimated'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		}
+	});
+var _user$project$Main$reset = F2(
+	function (model, item_to_reset) {
+		var newItems = A2(
+			_elm_lang$core$List$map,
+			function (item) {
+				return _elm_lang$core$Native_Utils.eq(item.id, item_to_reset.id) ? _elm_lang$core$Native_Utils.update(
+					item,
+					{hours: 0}) : item;
+			},
+			model.items);
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{items: newItems});
+	});
+var _user$project$Main$edit = F2(
+	function (model, id) {
+		var newParts = A2(
+			_elm_lang$core$List$map,
+			function (part) {
+				return _elm_lang$core$Native_Utils.eq(part.id, id) ? _elm_lang$core$Native_Utils.update(
+					part,
+					{name: model.name}) : part;
+			},
+			model.parts);
+		var newItems = A2(
+			_elm_lang$core$List$map,
+			function (item) {
+				return _elm_lang$core$Native_Utils.eq(item.id, id) ? _elm_lang$core$Native_Utils.update(
+					item,
+					{name: model.name}) : item;
+			},
+			model.items);
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{items: newItems, parts: newParts, name: '', id: _elm_lang$core$Maybe$Nothing});
+	});
+var _user$project$Main$initModel = {
+	items: {ctor: '[]'},
+	name: '',
+	id: _elm_lang$core$Maybe$Nothing,
+	parts: {ctor: '[]'}
+};
+var _user$project$Main$Model = F4(
+	function (a, b, c, d) {
+		return {items: a, name: b, id: c, parts: d};
+	});
+var _user$project$Main$Item = F3(
+	function (a, b, c) {
+		return {id: a, name: b, hours: c};
+	});
+var _user$project$Main$add = function (model) {
+	var item = A3(
+		_user$project$Main$Item,
+		_elm_lang$core$List$length(model.items),
+		model.name,
+		0);
+	var newItems = {ctor: '::', _0: item, _1: model.items};
+	return _elm_lang$core$Native_Utils.update(
+		model,
+		{items: newItems, name: ''});
+};
+var _user$project$Main$save = function (model) {
+	var _p0 = model.id;
+	if (_p0.ctor === 'Just') {
+		return A2(_user$project$Main$edit, model, _p0._0);
+	} else {
+		return _user$project$Main$add(model);
+	}
+};
+var _user$project$Main$Part = F3(
+	function (a, b, c) {
+		return {id: a, name: b, hours: c};
+	});
+var _user$project$Main$addHours = F3(
+	function (model, item_to_add, hours) {
+		var part = A3(
+			_user$project$Main$Part,
+			_elm_lang$core$List$length(model.parts),
+			item_to_add.name,
+			hours);
+		var newItems = A2(
+			_elm_lang$core$List$map,
+			function (item) {
+				return (_elm_lang$core$Native_Utils.eq(item.id, item_to_add.id) && (_elm_lang$core$Native_Utils.cmp(item.hours + hours, 0) > -1)) ? _elm_lang$core$Native_Utils.update(
+					item,
+					{hours: item.hours + hours}) : item;
+			},
+			model.items);
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				items: newItems,
+				parts: {ctor: '::', _0: part, _1: model.parts}
+			});
+	});
+var _user$project$Main$update = F2(
+	function (msg, model) {
+		var _p1 = msg;
+		switch (_p1.ctor) {
+			case 'Input':
+				return A2(
+					_elm_lang$core$Debug$log,
+					'Input updated Model',
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{name: _p1._0}));
+			case 'Cancel':
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{name: '', id: _elm_lang$core$Maybe$Nothing});
+			case 'Save':
+				return _elm_lang$core$String$isEmpty(model.name) ? model : _user$project$Main$save(model);
+			case 'Hours':
+				return A3(_user$project$Main$addHours, model, _p1._0, _p1._1);
+			case 'Reset':
+				return A2(_user$project$Main$reset, model, _p1._0);
+			case 'Edit':
+				var _p2 = _p1._0;
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						name: _p2.name,
+						id: _elm_lang$core$Maybe$Just(_p2.id)
+					});
+			default:
+				return model;
+		}
+	});
+var _user$project$Main$DeletePart = function (a) {
+	return {ctor: 'DeletePart', _0: a};
+};
+var _user$project$Main$Cancel = {ctor: 'Cancel'};
+var _user$project$Main$Save = {ctor: 'Save'};
+var _user$project$Main$Input = function (a) {
+	return {ctor: 'Input', _0: a};
+};
+var _user$project$Main$itemForm = function (model) {
+	return A2(
+		_elm_lang$html$Html$form,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Events$onSubmit(_user$project$Main$Save),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$input,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$type_('text'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$placeholder('Save/Edit Item...'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$Input),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$value(model.name),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				},
+				{ctor: '[]'}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$button,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$type_('submit'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Save'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$button,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$type_('button'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Cancel),
+								_1: {ctor: '[]'}
+							}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Cancel'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
+var _user$project$Main$Reset = function (a) {
+	return {ctor: 'Reset', _0: a};
+};
+var _user$project$Main$Hours = F2(
+	function (a, b) {
+		return {ctor: 'Hours', _0: a, _1: b};
+	});
+var _user$project$Main$Edit = function (a) {
+	return {ctor: 'Edit', _0: a};
+};
+var _user$project$Main$item = function (item) {
+	return A2(
+		_elm_lang$html$Html$li,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$i,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('edit'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(
+							_user$project$Main$Edit(item)),
+						_1: {ctor: '[]'}
+					}
+				},
+				{ctor: '[]'}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(item.name),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$button,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$type_('button'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(
+									_user$project$Main$Reset(item)),
+								_1: {ctor: '[]'}
+							}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Reset'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$button,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$type_('button'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onClick(
+										A2(_user$project$Main$Hours, item, 1)),
+									_1: {ctor: '[]'}
+								}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('+1'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$button,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$type_('button'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onClick(
+											A2(_user$project$Main$Hours, item, -1)),
+										_1: {ctor: '[]'}
+									}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('-1'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text(
+											_elm_lang$core$Basics$toString(item.hours)),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}
+			}
+		});
+};
+var _user$project$Main$itemList = function (model) {
+	return A2(
+		_elm_lang$html$Html$ul,
+		{ctor: '[]'},
+		A2(_elm_lang$core$List$map, _user$project$Main$item, model.items));
+};
+var _user$project$Main$itemSection = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _user$project$Main$itemListHeader,
+			_1: {
+				ctor: '::',
+				_0: _user$project$Main$itemList(model),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Main$hoursTotal(model),
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
+var _user$project$Main$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('board'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$h1,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Hours Keeper'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: _user$project$Main$itemSection(model),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Main$itemForm(model),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$p,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(
+									_elm_lang$core$Basics$toString(model)),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		});
+};
+var _user$project$Main$main = _elm_lang$html$Html$beginnerProgram(
+	{model: _user$project$Main$initModel, view: _user$project$Main$view, update: _user$project$Main$update})();
