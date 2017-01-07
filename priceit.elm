@@ -31,7 +31,7 @@ type alias Part =
 
 
 
---TODO: Initial model
+-- Initial model
 
 
 initModel : Model
@@ -283,15 +283,3 @@ main =
         , view = view
         , update = update
         }
-
-
-
-{--
-* Edit
-* Score
-* Input
-* Save
-* Cancel
-* DeletePart
-
---}
