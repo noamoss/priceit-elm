@@ -23,6 +23,12 @@ type alias Item =
     }
 
 
+type ItemType
+    = Graphic
+    | ContentType
+    | Action
+
+
 type alias Part =
     { id : Int
     , name : String
@@ -52,6 +58,7 @@ type Msg
     | Hours Item Int
     | Reset Item
     | Input String
+    | SelectItemType Item
     | Save
     | Cancel
     | DeletePart Part
@@ -271,8 +278,22 @@ itemForm model =
             , value model.name
             ]
             []
+        , itemTypeSelector
         , button [ type_ "submit" ] [ text "Save" ]
         , button [ type_ "button", onClick Cancel ] [ text "Cancel" ]
+        ]
+
+
+itemTypeSelector : Html Msg
+itemTypeSelector =
+    select
+        [ id "elementType"
+        ]
+        [ option [ disabled True, selected True ] [ text "Select Item Type" ]
+        , option [] [ text "Graphic" ]
+        , option [] [ text "Content Type" ]
+        , option [] [ text "Action" ]
+        , option [] [ text "Other" ]
         ]
 
 
