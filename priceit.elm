@@ -3,6 +3,8 @@ module Main exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Json.Decode
+import Maybe exposing (withDefault)
 
 
 -- model
@@ -12,6 +14,7 @@ type alias Model =
     { items : List Item
     , name : String
     , id : Maybe Int
+    , itemType : String
     , parts : List Part
     }
 
@@ -19,14 +22,9 @@ type alias Model =
 type alias Item =
     { id : Int
     , name : String
+    , itemType : String
     , hours : Int
     }
-
-
-type ItemType
-    = Graphic
-    | ContentType
-    | Action
 
 
 type alias Part =
@@ -45,6 +43,7 @@ initModel =
     { items = []
     , name = ""
     , id = Nothing
+    , itemType = ""
     , parts = []
     }
 
@@ -58,10 +57,10 @@ type Msg
     | Hours Item Int
     | Reset Item
     | Input String
-    | SelectItemType Item
     | Save
     | Cancel
     | DeletePart Part
+    | SelectItemType String
 
 
 update : Msg -> Model -> Model
@@ -87,7 +86,10 @@ update msg model =
             reset model item
 
         Edit item ->
-            { model | name = item.name, id = Just item.id }
+            { model | name = item.name, id = Just item.id, itemType = item.itemType }
+
+        SelectItemType selection ->
+            { model | itemType = selection }
 
         _ ->
             model
@@ -107,7 +109,7 @@ add : Model -> Model
 add model =
     let
         item =
-            Item (List.length model.items) model.name 0
+            Item (List.length model.items) model.name model.itemType 0
 
         newItems =
             item :: model.items
@@ -125,7 +127,10 @@ edit model id =
             List.map
                 (\item ->
                     if item.id == id then
-                        { item | name = model.name }
+                        { item
+                            | name = model.name
+                            , itemType = model.itemType
+                        }
                     else
                         item
                 )
@@ -215,6 +220,7 @@ itemListHeader : Html Msg
 itemListHeader =
     header []
         [ div [] [ text "Item" ]
+        , div [] [ text "Type" ]
         , div [] [ text "Hours Estimated" ]
         ]
 
@@ -235,6 +241,8 @@ item item =
             []
         , div []
             [ text item.name ]
+        , div []
+            [ text item.itemType ]
         , button
             [ type_ "button"
             , onClick (Reset item)
@@ -278,23 +286,30 @@ itemForm model =
             , value model.name
             ]
             []
-        , itemTypeSelector
+        , viewItemTypes
         , button [ type_ "submit" ] [ text "Save" ]
         , button [ type_ "button", onClick Cancel ] [ text "Cancel" ]
         ]
 
 
-itemTypeSelector : Html Msg
-itemTypeSelector =
-    select
-        [ id "elementType"
-        ]
-        [ option [ disabled True, selected True ] [ text "Select Item Type" ]
-        , option [] [ text "Graphic" ]
-        , option [] [ text "Content Type" ]
-        , option [] [ text "Action" ]
-        , option [] [ text "Other" ]
-        ]
+viewItemTypes : Html Msg
+viewItemTypes =
+    select [ onItemTypesChange SelectItemType ] itemTypesOptions
+
+
+onItemTypesChange : (String -> msg) -> Html.Attribute msg
+onItemTypesChange selection =
+    on "change" (Json.Decode.map selection Html.Events.targetValue)
+
+
+itemTypesOptions : List (Html Msg)
+itemTypesOptions =
+    [ option [ disabled True, selected True ] [ text "Select Item Type" ]
+    , option [ value "Graphic" ] [ text "Graphic" ]
+    , option [ value "Content Type" ] [ text "Content Type" ]
+    , option [ value "Action" ] [ text "Action" ]
+    , option [ value "Other" ] [ text "Other" ]
+    ]
 
 
 main : Program Never Model Msg

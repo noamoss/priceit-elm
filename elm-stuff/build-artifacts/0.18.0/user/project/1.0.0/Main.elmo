@@ -1,3 +1,89 @@
+var _user$project$Main$itemTypesOptions = {
+	ctor: '::',
+	_0: A2(
+		_elm_lang$html$Html$option,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$disabled(true),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$selected(true),
+				_1: {ctor: '[]'}
+			}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text('Select Item Type'),
+			_1: {ctor: '[]'}
+		}),
+	_1: {
+		ctor: '::',
+		_0: A2(
+			_elm_lang$html$Html$option,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$value('Graphic'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('Graphic'),
+				_1: {ctor: '[]'}
+			}),
+		_1: {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$option,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$value('Content Type'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Content Type'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$option,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$value('Action'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Action'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$option,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$value('Other'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Other'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			}
+		}
+	}
+};
+var _user$project$Main$onItemTypesChange = function (selection) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'change',
+		A2(_elm_lang$core$Json_Decode$map, selection, _elm_lang$html$Html_Events$targetValue));
+};
 var _user$project$Main$hoursTotal = function (model) {
 	var total = _elm_lang$core$List$sum(
 		A2(
@@ -54,10 +140,21 @@ var _user$project$Main$itemListHeader = A2(
 				{ctor: '[]'},
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html$text('Hours Estimated'),
+					_0: _elm_lang$html$Html$text('Type'),
 					_1: {ctor: '[]'}
 				}),
-			_1: {ctor: '[]'}
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Hours Estimated'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
 		}
 	});
 var _user$project$Main$reset = F2(
@@ -89,7 +186,7 @@ var _user$project$Main$edit = F2(
 			function (item) {
 				return _elm_lang$core$Native_Utils.eq(item.id, id) ? _elm_lang$core$Native_Utils.update(
 					item,
-					{name: model.name}) : item;
+					{name: model.name, itemType: model.itemType}) : item;
 			},
 			model.items);
 		return _elm_lang$core$Native_Utils.update(
@@ -100,21 +197,23 @@ var _user$project$Main$initModel = {
 	items: {ctor: '[]'},
 	name: '',
 	id: _elm_lang$core$Maybe$Nothing,
+	itemType: '',
 	parts: {ctor: '[]'}
 };
-var _user$project$Main$Model = F4(
-	function (a, b, c, d) {
-		return {items: a, name: b, id: c, parts: d};
+var _user$project$Main$Model = F5(
+	function (a, b, c, d, e) {
+		return {items: a, name: b, id: c, itemType: d, parts: e};
 	});
-var _user$project$Main$Item = F3(
-	function (a, b, c) {
-		return {id: a, name: b, hours: c};
+var _user$project$Main$Item = F4(
+	function (a, b, c, d) {
+		return {id: a, name: b, itemType: c, hours: d};
 	});
 var _user$project$Main$add = function (model) {
-	var item = A3(
+	var item = A4(
 		_user$project$Main$Item,
 		_elm_lang$core$List$length(model.items),
 		model.name,
+		model.itemType,
 		0);
 	var newItems = {ctor: '::', _0: item, _1: model.items};
 	return _elm_lang$core$Native_Utils.update(
@@ -182,12 +281,28 @@ var _user$project$Main$update = F2(
 					model,
 					{
 						name: _p2.name,
-						id: _elm_lang$core$Maybe$Just(_p2.id)
+						id: _elm_lang$core$Maybe$Just(_p2.id),
+						itemType: _p2.itemType
 					});
+			case 'SelectItemType':
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{itemType: _p1._0});
 			default:
 				return model;
 		}
 	});
+var _user$project$Main$SelectItemType = function (a) {
+	return {ctor: 'SelectItemType', _0: a};
+};
+var _user$project$Main$viewItemTypes = A2(
+	_elm_lang$html$Html$select,
+	{
+		ctor: '::',
+		_0: _user$project$Main$onItemTypesChange(_user$project$Main$SelectItemType),
+		_1: {ctor: '[]'}
+	},
+	_user$project$Main$itemTypesOptions);
 var _user$project$Main$DeletePart = function (a) {
 	return {ctor: 'DeletePart', _0: a};
 };
@@ -228,37 +343,41 @@ var _user$project$Main$itemForm = function (model) {
 				{ctor: '[]'}),
 			_1: {
 				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$button,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$type_('submit'),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('Save'),
-						_1: {ctor: '[]'}
-					}),
+				_0: _user$project$Main$viewItemTypes,
 				_1: {
 					ctor: '::',
 					_0: A2(
 						_elm_lang$html$Html$button,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$type_('button'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Cancel),
-								_1: {ctor: '[]'}
-							}
+							_0: _elm_lang$html$Html_Attributes$type_('submit'),
+							_1: {ctor: '[]'}
 						},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('Cancel'),
+							_0: _elm_lang$html$Html$text('Save'),
 							_1: {ctor: '[]'}
 						}),
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$button,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$type_('button'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Cancel),
+									_1: {ctor: '[]'}
+								}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('Cancel'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
 				}
 			}
 		});
@@ -305,20 +424,11 @@ var _user$project$Main$item = function (item) {
 				_1: {
 					ctor: '::',
 					_0: A2(
-						_elm_lang$html$Html$button,
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$type_('button'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(
-									_user$project$Main$Reset(item)),
-								_1: {ctor: '[]'}
-							}
-						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('Reset'),
+							_0: _elm_lang$html$Html$text(item.itemType),
 							_1: {ctor: '[]'}
 						}),
 					_1: {
@@ -331,13 +441,13 @@ var _user$project$Main$item = function (item) {
 								_1: {
 									ctor: '::',
 									_0: _elm_lang$html$Html_Events$onClick(
-										A2(_user$project$Main$Hours, item, 1)),
+										_user$project$Main$Reset(item)),
 									_1: {ctor: '[]'}
 								}
 							},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text('+1'),
+								_0: _elm_lang$html$Html$text('Reset'),
 								_1: {ctor: '[]'}
 							}),
 						_1: {
@@ -350,27 +460,47 @@ var _user$project$Main$item = function (item) {
 									_1: {
 										ctor: '::',
 										_0: _elm_lang$html$Html_Events$onClick(
-											A2(_user$project$Main$Hours, item, -1)),
+											A2(_user$project$Main$Hours, item, 1)),
 										_1: {ctor: '[]'}
 									}
 								},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text('-1'),
+									_0: _elm_lang$html$Html$text('+1'),
 									_1: {ctor: '[]'}
 								}),
 							_1: {
 								ctor: '::',
 								_0: A2(
-									_elm_lang$html$Html$div,
-									{ctor: '[]'},
+									_elm_lang$html$Html$button,
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text(
-											_elm_lang$core$Basics$toString(item.hours)),
+										_0: _elm_lang$html$Html_Attributes$type_('button'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Events$onClick(
+												A2(_user$project$Main$Hours, item, -1)),
+											_1: {ctor: '[]'}
+										}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('-1'),
 										_1: {ctor: '[]'}
 									}),
-								_1: {ctor: '[]'}
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$div,
+										{ctor: '[]'},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text(
+												_elm_lang$core$Basics$toString(item.hours)),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}
 							}
 						}
 					}
