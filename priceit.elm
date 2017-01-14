@@ -40,7 +40,7 @@ type alias Part =
 
 initModel : Model
 initModel =
-    { items = []
+    { items = [ { id = 0, name = "Example", itemType = "ContetType", hours = 1 } ]
     , name = ""
     , id = Nothing
     , itemType = ""
@@ -54,7 +54,7 @@ initModel =
 
 type Msg
     = Edit Item
-    | Hours Item Int
+    | ChangeHours Item Int
     | Reset Item
     | Input String
     | Save
@@ -79,7 +79,7 @@ update msg model =
             else
                 save model
 
-        Hours item estimated ->
+        ChangeHours item estimated ->
             addHours model item estimated
 
         Reset item ->
@@ -200,8 +200,9 @@ reset model item_to_reset =
 view : Model -> Html Msg
 view model =
     div [ class "board" ]
-        [ h1 [] [ text "Hours Keeper" ]
+        [ h1 [] [ text "PriceIT |  הערכת שעות" ]
         , itemSection model
+        , hoursTotal model
         , itemForm model
         , p [] [ text (toString model) ]
         ]
@@ -209,57 +210,40 @@ view model =
 
 itemSection : Model -> Html Msg
 itemSection model =
-    div []
+    table [ id "items-table" ]
         [ itemListHeader
         , itemList model
-        , hoursTotal model
         ]
 
 
 itemListHeader : Html Msg
 itemListHeader =
-    header []
-        [ div [] [ text "Item" ]
-        , div [] [ text "Type" ]
-        , div [] [ text "Hours Estimated" ]
+    thead []
+        [ th [] []
+        , th [] [ text "Item" ]
+        , th [] [ text "Type" ]
+        , th [] [ text "Hours" ]
         ]
 
 
 itemList : Model -> Html Msg
 itemList model =
-    ul []
+    tbody []
         (List.map item model.items)
 
 
 item : Item -> Html Msg
 item item =
-    li []
-        [ i
-            [ class "edit"
-            , onClick (Edit item)
+    tr []
+        [ td []
+            [ span [ class "action fa-edit", onClick (Edit item) ] []
+            , span [ class "action fa-plus", onClick (ChangeHours item 1) ] []
+            , span [ class "action fa-minus", onClick (ChangeHours item -1) ] []
+            , span [ class "action fa-ge", onClick (Reset item) ] []
             ]
-            []
-        , div []
-            [ text item.name ]
-        , div []
-            [ text item.itemType ]
-        , button
-            [ type_ "button"
-            , onClick (Reset item)
-            ]
-            [ text "Reset" ]
-        , button
-            [ type_ "button"
-            , onClick (Hours item 1)
-            ]
-            [ text "+1" ]
-        , button
-            [ type_ "button"
-            , onClick (Hours item -1)
-            ]
-            [ text "-1" ]
-        , div []
-            [ text (toString item.hours) ]
+        , td [ class "item-name" ] [ text item.name ]
+        , td [] [ text item.itemType ]
+        , td [] [ text (toString item.hours) ]
         ]
 
 
@@ -271,8 +255,10 @@ hoursTotal model =
                 |> List.sum
     in
         footer []
-            [ div [] [ text "Total:" ]
-            , div [] [ text (toString total) ]
+            [ div []
+                [ text "Total:"
+                , text (toString total)
+                ]
             ]
 
 
