@@ -56,6 +56,7 @@ type Msg
     = Edit Item
     | ChangeHours Item Int
     | Reset Item
+    | DeleteItem Item
     | Input String
     | Save
     | Cancel
@@ -84,6 +85,9 @@ update msg model =
 
         Reset item ->
             reset model item
+
+        DeleteItem item ->
+            deleteItem model item
 
         Edit item ->
             { model | name = item.name, id = Just item.id, itemType = item.itemType }
@@ -193,6 +197,19 @@ reset model item_to_reset =
         { model | items = newItems }
 
 
+deleteItem : Model -> Item -> Model
+deleteItem model item_to_delete =
+    let
+        newItems =
+            List.filter
+                (\item ->
+                    not (item.id == item_to_delete.id)
+                )
+                model.items
+    in
+        { model | items = newItems }
+
+
 
 -- view
 
@@ -240,6 +257,7 @@ item item =
             , span [ class "action fa-plus", onClick (ChangeHours item 1) ] []
             , span [ class "action fa-minus", onClick (ChangeHours item -1) ] []
             , span [ class "action fa-ge", onClick (Reset item) ] []
+            , span [ class "fa-trash", onClick (DeleteItem item) ] []
             ]
         , td [ class "item-name" ] [ text item.name ]
         , td [] [ text item.itemType ]

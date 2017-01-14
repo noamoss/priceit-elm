@@ -157,6 +157,18 @@ var _user$project$Main$itemListHeader = A2(
 			}
 		}
 	});
+var _user$project$Main$deleteItem = F2(
+	function (model, item_to_delete) {
+		var newItems = A2(
+			_elm_lang$core$List$filter,
+			function (item) {
+				return !_elm_lang$core$Native_Utils.eq(item.id, item_to_delete.id);
+			},
+			model.items);
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{items: newItems});
+	});
 var _user$project$Main$reset = F2(
 	function (model, item_to_reset) {
 		var newItems = A2(
@@ -279,6 +291,8 @@ var _user$project$Main$update = F2(
 				return A3(_user$project$Main$addHours, model, _p1._0, _p1._1);
 			case 'Reset':
 				return A2(_user$project$Main$reset, model, _p1._0);
+			case 'DeleteItem':
+				return A2(_user$project$Main$deleteItem, model, _p1._0);
 			case 'Edit':
 				var _p2 = _p1._0;
 				return _elm_lang$core$Native_Utils.update(
@@ -386,6 +400,9 @@ var _user$project$Main$itemForm = function (model) {
 			}
 		});
 };
+var _user$project$Main$DeleteItem = function (a) {
+	return {ctor: 'DeleteItem', _0: a};
+};
 var _user$project$Main$Reset = function (a) {
 	return {ctor: 'Reset', _0: a};
 };
@@ -465,7 +482,23 @@ var _user$project$Main$item = function (item) {
 										}
 									},
 									{ctor: '[]'}),
-								_1: {ctor: '[]'}
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$span,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$class('fa-trash'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Events$onClick(
+													_user$project$Main$DeleteItem(item)),
+												_1: {ctor: '[]'}
+											}
+										},
+										{ctor: '[]'}),
+									_1: {ctor: '[]'}
+								}
 							}
 						}
 					}
